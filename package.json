@@ -1,0 +1,25 @@
+{
+  "name": "ecommerce-api",
+  "version": "1.0.0",
+  "description": "API de e-commerce con gestión de productos y carritos",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+    ,"test": "node --test"
+    ,"lint": "eslint ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+    ,"express-handlebars": "^7.0.7"
+    ,"socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+    ,"eslint": "^8.45.0"
+  }
+}
