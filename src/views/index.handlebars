@@ -1,0 +1,95 @@
+<h1>Productos</h1>
+
+<form id="filters" method="GET">
+  <label>
+    Buscar (categoría o status):
+    <input name="query" value="{{pagination.query.query}}" placeholder="category:Electrónica o status:true" />
+  </label>
+  <label>
+    Orden (precio):
+    <select name="sort">
+      <option value="">--</option>
+      <option value="asc">Ascendente</option>
+      <option value="desc">Descendente</option>
+    </select>
+  </label>
+  <label>
+    Items por página:
+    <input name="limit" type="number" min="1" value="{{pagination.query.limit}}" />
+  </label>
+  <button type="submit">Filtrar</button>
+</form>
+
+<div class="products">
+  {{#each products}}
+    <div class="product-card">
+      <h3><a href="/products/{{this._id}}">{{this.title}}</a></h3>
+      <p>{{this.description}}</p>
+      <p><strong>Precio:</strong> ${{this.price}}</p>
+      <p><strong>Categoría:</strong> {{this.category}}</p>
+      <p><strong>Stock:</strong> {{this.stock}}</p>
+      <button class="add-to-cart" data-id="{{this._id}}">Agregar al carrito</button>
+    </div>
+  {{/each}}
+</div>
+
+<nav class="pagination">
+  {{#if pagination.prevLink}}
+    <a href="{{pagination.prevLink}}">Anterior</a>
+  {{/if}}
+  <span>Página {{pagination.currentPage}} de {{pagination.totalPages}}</span>
+  {{#if pagination.nextLink}}
+    <a href="{{pagination.nextLink}}">Siguiente</a>
+  {{/if}}
+  <div class="go-to-page">
+    <input type="number" id="pageInput" min="1" max="{{pagination.totalPages}}" placeholder="Página" />
+    <button id="goToPageBtn">Ir</button>
+  </div>
+</nav>
+
+<button id="viewCart">Ver carrito</button>
+
+<script>
+  const STORAGE_KEY = 'ecommerce_cart_id';
+  async function getCartId() {
+    let cartId = localStorage.getItem(STORAGE_KEY);
+    if (!cartId) {
+      const res = await fetch('/api/carts', { method: 'POST' });
+      const data = await res.json();
+      cartId = data.id || data._id || data._id;
+      localStorage.setItem(STORAGE_KEY, cartId);
+    }
+    return cartId;
+  }
+
+  async function addToCart(productId) {
+    const cartId = await getCartId();
+    await fetch(`/api/carts/${cartId}/product/${productId}`, { method: 'POST' });
+    alert('Producto agregado al carrito');
+  }
+
+  async function goToCart() {
+    const cartId = await getCartId();
+    window.location.href = `/carts/${cartId}`;
+  }
+
+  document.getElementById('viewCart').addEventListener('click', goToCart);
+
+  document.getElementById('goToPageBtn').addEventListener('click', () => {
+    const page = document.getElementById('pageInput').value;
+    if (page && page >= 1 && page <= {{pagination.totalPages}}) {
+      const url = new URL(window.location);
+      url.searchParams.set('page', page);
+      window.location.href = url.toString();
+    } else {
+      alert('Número de página inválido');
+    }
+  });
+
+  document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', async () => {
+      const productId = button.getAttribute('data-id');
+      await addToCart(productId);
+    });
+  });
+

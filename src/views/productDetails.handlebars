@@ -1,0 +1,28 @@
+<h1>{{product.title}}</h1>
+<p>{{product.description}}</p>
+<p><strong>Precio:</strong> ${{product.price}}</p>
+<p><strong>Categoría:</strong> {{product.category}}</p>
+<p><strong>Stock:</strong> {{product.stock}}</p>
+<p><strong>Código:</strong> {{product.code}}</p>
+
+<button id="addToCart">Agregar al carrito</button>
+
+<script>
+  const STORAGE_KEY = 'ecommerce_cart_id';
+  async function getCartId() {
+    let cartId = localStorage.getItem(STORAGE_KEY);
+    if (!cartId) {
+      const res = await fetch('/api/carts', { method: 'POST' });
+      const data = await res.json();
+      cartId = data.id || data._id || data._id;
+      localStorage.setItem(STORAGE_KEY, cartId);
+    }
+    return cartId;
+  }
+
+  document.getElementById('addToCart').addEventListener('click', async () => {
+    const cartId = await getCartId();
+    await fetch(`/api/carts/${cartId}/product/{{product.id}}`, { method: 'POST' });
+    alert('Producto agregado al carrito');
+  });
+</script>
