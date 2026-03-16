@@ -2,21 +2,28 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ValidationError, DuplicateError, NotFoundError } from '../utils/errors.js';
+<<<<<<< HEAD
 import ProductModel from '../models/Product.js';
+=======
+>>>>>>> master/master
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const defaultProductsPath = path.join(__dirname, '../../data/products.json');
 
 class ProductManager {
   constructor(storagePath) {
+<<<<<<< HEAD
     // if a storagePath is provided, keep using file-based persistence (tests, fallback)
     this.useFile = Boolean(storagePath);
+=======
+>>>>>>> master/master
     this.products = [];
     this.nextId = 1;
     this.productsPath = storagePath || defaultProductsPath;
   }
 
   async initialize() {
+<<<<<<< HEAD
     if (this.useFile) {
       try {
         const data = await fs.readFile(this.productsPath, 'utf-8');
@@ -32,6 +39,21 @@ class ProductManager {
         this.nextId = 1;
         await this.saveProducts();
       }
+=======
+    try {
+      const data = await fs.readFile(this.productsPath, 'utf-8');
+      this.products = JSON.parse(data);
+      if (this.products.length > 0) {
+        this.nextId = Math.max(...this.products.map(p => {
+          const id = typeof p.id === 'string' ? parseInt(p.id) : p.id;
+          return isNaN(id) ? 0 : id;
+        })) + 1;
+      }
+    } catch (error) {
+      this.products = [];
+      this.nextId = 1;
+      await this.saveProducts();
+>>>>>>> master/master
     }
   }
 
@@ -55,6 +77,7 @@ class ProductManager {
   }
 
   async getAllProducts() {
+<<<<<<< HEAD
     if (this.useFile) {
       return this.products;
     }
@@ -124,6 +147,13 @@ class ProductManager {
       return this.products.find(p => p.id == id);
     }
     return ProductModel.findById(id).lean();
+=======
+    return this.products;
+  }
+
+  async getProductById(id) {
+    return this.products.find(p => p.id == id);
+>>>>>>> master/master
   }
 
   async addProduct(productData) {
@@ -147,6 +177,7 @@ class ProductManager {
       }
     }
 
+<<<<<<< HEAD
     if (this.useFile) {
       // codigo único
       if (this.products.some(p => p.code === productData.code)) {
@@ -177,6 +208,15 @@ class ProductManager {
     }
 
     const created = await ProductModel.create({
+=======
+    // codigo único
+    if (this.products.some(p => p.code === productData.code)) {
+      throw new DuplicateError(`Código "${productData.code}" ya existe`);
+    }
+
+    const newProduct = {
+      id: this.nextId++,
+>>>>>>> master/master
       title: productData.title,
       description: productData.description,
       code: productData.code,
@@ -185,6 +225,7 @@ class ProductManager {
       stock: productData.stock,
       category: productData.category || '',
       thumbnails: productData.thumbnails || []
+<<<<<<< HEAD
     });
 
     return created.toObject();
@@ -239,6 +280,25 @@ class ProductManager {
     if (updateData.id) {
       delete updateData.id;
     }
+=======
+    };
+
+    this.products.push(newProduct);
+    await this.saveProducts();
+    return newProduct;
+  }
+
+  async updateProduct(id, updateData) {
+    const productIndex = this.products.findIndex(p => p.id == id);
+    if (productIndex === -1) {
+      throw new NotFoundError('Producto no encontrado');
+    }
+
+    // No permitir actualizar el ID
+    delete updateData.id;
+
+    // validate some fields when updating
+>>>>>>> master/master
     if (updateData.price !== undefined) {
       if (typeof updateData.price !== 'number' || updateData.price < 0) {
         throw new ValidationError('El precio debe ser un número mayor o igual a 0');
@@ -256,12 +316,18 @@ class ProductManager {
       }
     }
     if (updateData.code !== undefined) {
+<<<<<<< HEAD
       const existing = await ProductModel.findOne({ code: updateData.code, _id: { $ne: id } });
+=======
+      // ensure code uniqueness (ignoring current product)
+      const existing = this.products.find(p => p.code === updateData.code && p.id != id);
+>>>>>>> master/master
       if (existing) {
         throw new DuplicateError(`Código "${updateData.code}" ya existe`);
       }
     }
 
+<<<<<<< HEAD
     const updated = await ProductModel.findByIdAndUpdate(id, updateData, { new: true }).lean();
     if (!updated) {
       throw new NotFoundError('Producto no encontrado');
@@ -287,6 +353,28 @@ class ProductManager {
       throw new Error('Producto no encontrado');
     }
     return deleted;
+=======
+    const updatedProduct = {
+      ...this.products[productIndex],
+      ...updateData
+    };
+
+    this.products[productIndex] = updatedProduct;
+    await this.saveProducts();
+    return updatedProduct;
+  }
+
+  async deleteProduct(id) {
+    const productIndex = this.products.findIndex(p => p.id == id);
+    if (productIndex === -1) {
+      throw new Error('Producto no encontrado');
+    }
+
+    const deletedProduct = this.products[productIndex];
+    this.products.splice(productIndex, 1);
+    await this.saveProducts();
+    return deletedProduct;
+>>>>>>> master/master
   }
 }
 

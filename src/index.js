@@ -6,18 +6,28 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import ProductManager from './managers/ProductManager.js';
 import CartManager from './managers/CartManager.js';
+<<<<<<< HEAD
 import { connectMongo } from './db/mongoose.js';
 import { createProductsRouter } from './routes/products.js';
 import { createCartsRouter } from './routes/carts.js';
 import { createViewsRouter } from './routes/views.js';
 import ProductModel from './models/Product.js';
+=======
+import { createProductsRouter } from './routes/products.js';
+import { createCartsRouter } from './routes/carts.js';
+import { createViewsRouter } from './routes/views.js';
+>>>>>>> master/master
 
 // __dirname replacement for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+<<<<<<< HEAD
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 8080;
+=======
+const PORT = 8080;
+>>>>>>> master/master
 
 // create http + socket server later
 let io;
@@ -35,6 +45,7 @@ let io;
   app.use(express.static(path.join(__dirname, 'public')));
 
 // Inicializar managers
+<<<<<<< HEAD
 let useMongo = true;
 let productManager, cartManager;
 
@@ -115,10 +126,19 @@ async function startServer() {
       }
     }
 
+=======
+const productManager = new ProductManager();
+const cartManager = new CartManager();
+
+// Inicializar y arrancar el servidor
+async function startServer() {
+  try {
+>>>>>>> master/master
     // Inicializar managers con los datos persistidos
     await productManager.initialize();
     await cartManager.initialize();
 
+<<<<<<< HEAD
     // Seed productos de ejemplo si no hay productos (para ambos modos)
     const existingProducts = await productManager.getAllProducts();
     if (existingProducts.length === 0) {
@@ -186,6 +206,12 @@ async function startServer() {
     const productsRouter = createProductsRouter(productManager, io);
     const cartsRouter = createCartsRouter(cartManager, productManager);
     const viewsRouter = createViewsRouter(productManager, cartManager);
+=======
+    // Crear routers (pasar io para emitir eventos en endpoints)
+    const productsRouter = createProductsRouter(productManager, io);
+    const cartsRouter = createCartsRouter(cartManager, productManager);
+    const viewsRouter = createViewsRouter(productManager);
+>>>>>>> master/master
 
     // Rutas
     app.use('/api/products', productsRouter);
@@ -194,6 +220,7 @@ async function startServer() {
     app.use('/', viewsRouter);
 
     // Ruta base para verificar que el servidor está funcionando
+<<<<<<< HEAD
     app.get('/', async (req, res) => {
       const limit = parseInt(req.query.limit, 10) || 5;
       const page = parseInt(req.query.page, 10) || 1;
@@ -218,6 +245,14 @@ async function startServer() {
           prevLink: hasPrevPage ? buildLink(currentPage - 1) : null,
           nextLink: hasNextPage ? buildLink(currentPage + 1) : null,
           query: req.query
+=======
+    app.get('/', (req, res) => {
+      res.json({ 
+        message: 'Servidor de E-commerce activo',
+        endpoints: {
+          products: '/api/products',
+          carts: '/api/carts'
+>>>>>>> master/master
         }
       });
     });
@@ -258,6 +293,7 @@ async function startServer() {
       });
     });
 
+<<<<<<< HEAD
     const startListening = (port) => new Promise((resolve, reject) => {
       const onError = (err) => {
         server.removeListener('listening', onListening);
@@ -297,6 +333,12 @@ async function startServer() {
 
     console.log(`Servidor escuchando en puerto ${boundPort}`);
     console.log(`http://localhost:${boundPort}`);
+=======
+    server.listen(PORT, () => {
+      console.log(`Servidor escuchando en puerto ${PORT}`);
+      console.log(`http://localhost:${PORT}`);
+    });
+>>>>>>> master/master
   } catch (error) {
     console.error('Error al iniciar el servidor:', error);
     process.exit(1);
