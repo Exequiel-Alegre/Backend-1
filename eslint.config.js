@@ -1,10 +1,12 @@
 export default {
-  env: {
-    node: true,
-    es2021: true,
-  },
-  extends: 'eslint:recommended',
-  parserOptions: {
+  languageOptions: {
+    globals: {
+      console: 'readonly',
+      process: 'readonly',
+      Buffer: 'readonly',
+      __dirname: 'readonly',
+      __filename: 'readonly',
+    },
     ecmaVersion: 12,
     sourceType: 'module',
   },

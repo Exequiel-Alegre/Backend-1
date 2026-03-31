@@ -3,7 +3,6 @@ import express from 'express';
 const router = express.Router();
 
 export const createProductsRouter = (productManager, io) => {
-<<<<<<< HEAD
   // GET / - Listar productos con filtros/paginación/ordenamiento
   router.get('/', async (req, res) => {
     try {
@@ -36,13 +35,6 @@ export const createProductsRouter = (productManager, io) => {
         prevLink: hasPrevPage ? buildLink(prevPage) : null,
         nextLink: hasNextPage ? buildLink(nextPage) : null
       });
-=======
-  // GET / - Listar todos los productos
-  router.get('/', async (req, res) => {
-    try {
-      const products = await productManager.getAllProducts();
-      res.json(products);
->>>>>>> master/master
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

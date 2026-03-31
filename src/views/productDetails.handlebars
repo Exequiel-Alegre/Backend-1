@@ -22,7 +22,7 @@
 
   document.getElementById('addToCart').addEventListener('click', async () => {
     const cartId = await getCartId();
-    await fetch(`/api/carts/${cartId}/product/{{product.id}}`, { method: 'POST' });
+    await fetch(`/api/carts/${cartId}/products/{{product.id}}`, { method: 'POST' });
     alert('Producto agregado al carrito');
   });
 </script>

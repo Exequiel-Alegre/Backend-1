@@ -2,31 +2,8 @@ import express from 'express';
 
 const router = express.Router();
 
+// POST / - Crear nuevo carrito
 export const createCartsRouter = (cartManager, productManager) => {
-<<<<<<< HEAD
-  const populateCart = async (cart) => {
-    if (!cart) return null;
-    if (!cart.products || !Array.isArray(cart.products)) {
-      return cart;
-    }
-
-    const populated = await Promise.all(cart.products.map(async (item) => {
-      const product = await productManager.getProductById(item.product);
-      return {
-        product: product || { id: item.product },
-        quantity: item.quantity
-      };
-    }));
-
-    return {
-      ...cart,
-      products: populated
-    };
-  };
-
-=======
->>>>>>> master/master
-  // POST / - Crear nuevo carrito
   router.post('/', async (req, res) => {
     try {
       const newCart = await cartManager.createCart();
@@ -36,11 +13,7 @@ export const createCartsRouter = (cartManager, productManager) => {
     }
   });
 
-<<<<<<< HEAD
   // GET /:cid - Listar productos del carrito (populated)
-=======
-  // GET /:cid - Listar productos del carrito
->>>>>>> master/master
   router.get('/:cid', async (req, res) => {
     try {
       const { cid } = req.params;
@@ -50,25 +23,15 @@ export const createCartsRouter = (cartManager, productManager) => {
         return res.status(404).json({ error: 'Carrito no encontrado' });
       }
 
-<<<<<<< HEAD
-      const populated = await populateCart(cart);
-      res.json(populated);
-    } catch (error) {
-      if (error.name === 'NotFoundError' || error.name === 'ValidationError') {
-=======
-      // devolver la estructura completa del carrito
       res.json(cart);
     } catch (error) {
       if (error.name === 'NotFoundError' || error.name === 'ValidationError') {
-        // although GET shouldn't throw in our code, keep safety
->>>>>>> master/master
         return res.status(400).json({ error: error.message });
       }
       res.status(500).json({ error: error.message });
     }
   });
 
-<<<<<<< HEAD
   // DELETE /:cid - Eliminar todos los productos del carrito
   router.delete('/:cid', async (req, res) => {
     try {
@@ -153,10 +116,8 @@ export const createCartsRouter = (cartManager, productManager) => {
     }
   });
 
-=======
->>>>>>> master/master
-  // POST /:cid/product/:pid - Agregar producto al carrito
-  router.post('/:cid/product/:pid', async (req, res) => {
+  // POST /:cid/products/:pid - Agregar producto al carrito
+  router.post('/:cid/products/:pid', async (req, res) => {
     try {
       const { cid, pid } = req.params;
 
@@ -195,3 +156,4 @@ export const createCartsRouter = (cartManager, productManager) => {
 };
 
 export default router;
+

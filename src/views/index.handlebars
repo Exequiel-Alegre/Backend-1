@@ -56,6 +56,38 @@
     if (!cartId) {
       const res = await fetch('/api/carts', { method: 'POST' });
       const data = await res.json();
+      cartId = data.id || data._id;
+      localStorage.setItem(STORAGE_KEY, cartId);
+    }
+    return cartId;
+  }
+
+  document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', async () => {
+      const productId = button.dataset.id;
+      const cartId = await getCartId();
+      await fetch(`/api/carts/${cartId}/products/${productId}`, { method: 'POST' });
+      alert('Producto agregado al carrito');
+    });
+  });
+
+  document.getElementById('goToPageBtn').addEventListener('click', () => {
+    const page = document.getElementById('pageInput').value;
+    if (page) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('page', page);
+      window.location.search = params.toString();
+    }
+  });
+</script>
+
+<script>
+  const STORAGE_KEY = 'ecommerce_cart_id';
+  async function getCartId() {
+    let cartId = localStorage.getItem(STORAGE_KEY);
+    if (!cartId) {
+      const res = await fetch('/api/carts', { method: 'POST' });
+      const data = await res.json();
       cartId = data.id || data._id || data._id;
       localStorage.setItem(STORAGE_KEY, cartId);
     }

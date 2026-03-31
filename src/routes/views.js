@@ -2,7 +2,6 @@ import express from 'express';
 
 const router = express.Router();
 
-<<<<<<< HEAD
 export const createViewsRouter = (productManager, cartManager) => {
   // Vista de productos paginados, filtrados y ordenados
   router.get('/products', async (req, res) => {
@@ -65,10 +64,6 @@ export const createViewsRouter = (productManager, cartManager) => {
     const populated = await populateCart(cart);
     res.render('cart', { title: `Carrito ${cart._id || cart.id}`, cart: populated });
   });
-
-=======
-export const createViewsRouter = (productManager) => {
->>>>>>> master/master
   // página estática que lista productos sin websocket
   router.get('/home', async (req, res) => {
     const products = await productManager.getAllProducts();
@@ -84,8 +79,4 @@ export const createViewsRouter = (productManager) => {
   return router;
 };
 
-<<<<<<< HEAD
 export default router;
-=======
-export default router;
->>>>>>> master/master
